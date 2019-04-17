@@ -1,0 +1,213 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<title>
+Hosted Session demonstration addressing CCL and HA needs
+</title>
+
+<script src="https://qa04.gateway.mastercard.com/form/version/52/merchant/TESTPPRO/session.js?debug=true"></script>
+
+<style id="antiClickjack">body{display:none !important;}</style>
+<style>
+.input-field:focus {
+   border-color: #66afe9; 
+   outline:0;
+   outline: none !important;
+   box-shadow: none;
+}
+.select-field:focus {
+   border-color: #66afe9; 
+   outline:0;
+   outline: none !important;
+   box-shadow: none;
+}
+ .col { padding:5px; }
+ .input-field { border: 1px solid black;  }
+ .select-field { border: 1px solid black;  }
+ .error { color:red }
+</style>
+
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+</head>
+<body>
+
+<h1>Please enter your payment details</h1>
+<div class="container" style="width:700px;margin-left:20px" >
+  <div class="row"  >
+    <div class="col">
+      <label for="card-number">Card Number (Required):</label>
+    </div>
+    <div class="col" id="cardnumberarea">
+      <input type="text" id="card-number" class="input-field" value="" readonly>
+    </div>
+  </div>
+  <div class="row" >
+    <div class="col">
+      <label for="expiry-month">Expiry Month (MM) (Required):</label>
+    </div>
+    <div class="col" id="cardexpiryMontharea">
+				<select id="expiry-month" class="select-field" required="" readonly/>
+					<option value="">Select Month</option>
+					<option value="01">January</option>
+					<option value="02">February</option>
+					<option value="03">March</option>
+					<option value="04">April</option>
+					<option value="05">May</option>
+					<option value="06">June</option>
+					<option value="07">July</option>
+					<option value="08">August</option>
+					<option value="09">September</option>
+					<option value="10">October</option>
+					<option value="11">November</option>
+					<option value="12">December</option>
+				</select>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+      <label for="expiry-year">Expiry Year (YY) (Required):</label>
+    </div>
+    <div class="col">
+			<select id="expiry-year" class="select-field" required=""  readonly/>
+						<option value="">Select Year</option>
+						<option>21</option>
+						<option>22</option>
+						<option>23</option>
+						<option>24</option>
+						<option>25</option>
+						<option>26</option>
+						<option>27</option>
+						<option>28</option>
+						<option>29</option>
+						<option>30</option>
+				</select>
+    </div>
+  </div>
+  <div class="row" id="cardsecurityarea">
+    <div class="col">
+      <label for="security-code">Security Code:</label>
+    </div>
+    <div class="col">
+      <input type="text" id="security-code" class="input-field" value="" readonly>
+    </div>
+	</div>
+	<div class="row"  >
+    <div class="col">
+      <label for="test-input">Test Input:</label>
+    </div>
+    <div class="col" id="testinputarea">
+      <input type="text" id="test-input" class="input-field" value="">
+    </div>
+	</div>
+	<div class="row"  >
+    <div class="col">
+      <label for="test-select">Test Select:</label>
+    </div>
+    <div class="col" id="testselectarea">
+      <select id="test-select" class="select-field" required="">
+						<option value="">Select</option>
+						<option>21</option>
+						<option>22</option>
+						<option>23</option>
+			</select>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+    </div>
+    <div class="col">
+      <button id="payButton" onclick="pay();">Pay Now</button>
+    </div>
+  </div>
+
+</div>
+<script type="text/javascript">
+if (self === top) {
+    var antiClickjack = document.getElementById("antiClickjack");
+    antiClickjack.parentNode.removeChild(antiClickjack);
+} else {
+    top.location = self.location;
+}
+
+PaymentSession.configure({
+    fields: {
+        card: {
+        	number: "#card-number",
+        	securityCode: "#security-code",
+        	expiryMonth: "#expiry-month",
+        	expiryYear: "#expiry-year"
+        }
+    },
+    frameEmbeddingMitigation: ["javascript"],
+    callbacks: {
+        initialized: function(response) {
+        },
+        formSessionUpdate: function(response) {
+            if (response.status) {
+				if (response.status == "ok")
+				{
+					
+				}
+				else if(response.status == "fields_in_error")
+				{
+				
+					
+				}
+			}
+        }
+      }
+  });
+
+PaymentSession.setFocusStyle(["card.number",'card.expiryMonth','card.expiryYear',"card.securityCode"], {
+'border-color': '#66afe9', outline:0,
+'box-shadow': '0px 1px 1px rgba(0, 0, 0, 0.075) inset, 0px 0px 8px rgba(255, 100, 255, 0.5)'
+});
+
+
+
+var finalSubmit = expiryMonth = expiryYear = cardNumber = securityCode = false;
+
+PaymentSession.onFocus(['card.number','card.expiryMonth','card.expiryYear' ,'card.securityCode'], function(selector) {  
+    console.log("Focus event executed for " + selector);
+});
+
+PaymentSession.onBlur(['card.number'], function(selector)
+{
+	finalSubmit = false;
+	cardNumber = true;
+	console.log("Focus event executed for " + selector);
+	PaymentSession.updateSessionFromForm('card');
+});
+
+PaymentSession.onBlur(['card.expiryMonth'], function(selector)
+{
+	finalSubmit = false;
+	expiryMonth = true;
+	console.log("Blur event executed for " + selector);
+	PaymentSession.updateSessionFromForm('card');
+});
+
+PaymentSession.onBlur(['card.expiryYear'], function(selector)
+{
+	finalSubmit = false;
+	expiryYear = true;
+	console.log("Blur event executed for " + selector);
+	PaymentSession.updateSessionFromForm('card');
+});
+
+PaymentSession.onBlur(['card.securityCode'], function(selector)
+{
+	finalSubmit = false;
+	securityCode = true;
+	console.log("Blur event executed for " + selector);
+	PaymentSession.updateSessionFromForm('card');
+});
+
+function pay() {
+	 finalSubmit = true;
+	 nameOnCard = expiryMonth = expiryYear = cardNumber = securityCode = false;
+   PaymentSession.updateSessionFromForm('card');
+}
+</script>
+</body>
+</html>
